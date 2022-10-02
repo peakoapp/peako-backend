@@ -7,11 +7,15 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="peako-core" />
+        <module name="peako-auth-server" />
+        <module name="peako-account-service" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="peako-account-service" options="-parameters" />
+      <module name="peako-auth-server" options="-parameters" />
       <module name="peako-core" options="-parameters" />
     </option>
   </component>

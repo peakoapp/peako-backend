@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>peako-auth-server</artifactId>
+    <artifactId>peako-account-service</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -34,7 +34,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.peakoapp.AuthorizationServerApplication</mainClass>
+                    <mainClass>com.peakoapp.AccountServiceApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>
