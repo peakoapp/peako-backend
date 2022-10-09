@@ -6,10 +6,12 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.peakoapp.core.constant.constnt.Regex;
 import com.peakoapp.core.constant.enums.IdentityProvider;
 import com.peakoapp.core.model.dto.UserPayload;
+import com.peakoapp.core.validation.group.Credentials;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.validation.groups.Default;
 
 /**
  * The {@code AccountDetails} class is a subset of {@link UserPayload} that represents a user's
@@ -30,8 +32,8 @@ public class AccountDetails implements Details<UserPayload> {
      * The email which the user uses to sign in their account.
      * This field can be directly set by user through the passed JSON value.
      */
-    @NotNull
-    @Email(regexp = Regex.EMAIL)
+    @NotNull(groups = {Default.class, Credentials.class})
+    @Email(regexp = Regex.EMAIL, groups = {Default.class, Credentials.class})
     private String email;
 
     /**
@@ -46,9 +48,9 @@ public class AccountDetails implements Details<UserPayload> {
      * The unencrypted password which the user uses to sign in their account.
      * This field can be directly set by user through the passed JSON value.
      */
-    @NotNull
-    @NotBlank
-    @Size(min = 8)
+    @NotNull(groups = {Default.class, Credentials.class})
+    @NotBlank(groups = {Default.class, Credentials.class})
+    @Size(min = 8, groups = {Default.class, Credentials.class})
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
