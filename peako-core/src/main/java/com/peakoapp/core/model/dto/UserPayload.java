@@ -29,6 +29,23 @@ public class UserPayload implements Serializable, Payload<UserEntity> {
     }
 
     @SuppressWarnings("checkstyle:MissingJavadocMethod")
+    public UserPayload(UserEntity entity) {
+        this.id = entity.getId();
+        this.email = entity.getEmail();
+        this.emailVerified = entity.getEmailVerified();
+        this.password = entity.getPassword();
+        this.profileUrl = entity.getProfileUrl();
+        this.bio = entity.getBio();
+        this.firstName = entity.getFirstName();
+        this.lastName = entity.getLastName();
+        this.location = entity.getLocation();
+        this.provider = entity.getProvider();
+        this.nonDeleted = entity.getNonDeleted();
+        this.nonLocked = entity.getNonLocked();
+        this.enabled = entity.getEnabled();
+    }
+
+    @SuppressWarnings("checkstyle:MissingJavadocMethod")
     public UserPayload(Long id, String email, Boolean emailVerified, String password,
                        String profileUrl, String bio, String firstName, String lastName,
                        String location, IdentityProvider provider, Boolean nonDeleted,
