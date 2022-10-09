@@ -25,7 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Table(name = "peako_user")
 @EntityListeners(AuditingEntityListener.class)
-public class UserEntity implements Serializable {
+public class UserEntity implements Serializable, Entirety {
     @Id
     @GeneratedValue(generator = "SnowFlakeGenerator")
     @GenericGenerator(
