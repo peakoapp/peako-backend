@@ -11,6 +11,8 @@ import java.util.Date;
  * @version 0.1.0
  */
 public class R<T> implements Serializable {
+    private static final long serialVersionUID = -2036096896645784035L;
+
     private int code;
     private String message;
     private T body;

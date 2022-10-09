@@ -7,6 +7,7 @@ import com.peakoapp.core.constant.constnt.Regex;
 import com.peakoapp.core.constant.enums.IdentityProvider;
 import com.peakoapp.core.model.dto.UserPayload;
 import com.peakoapp.core.validation.group.Credentials;
+import java.io.Serializable;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -20,7 +21,9 @@ import javax.validation.groups.Default;
  * @version 0.1.0
  */
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class AccountDetails implements Details<UserPayload> {
+public class AccountDetails implements Details<UserPayload>, Serializable {
+    private static final long serialVersionUID = -539283611202698481L;
+
     /**
      * The user id which identifies the owner of the account.
      * This field should only be used to search records in the database. It cannot be updated.

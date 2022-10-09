@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.peakoapp.core.model.dto.UserPayload;
+import java.io.Serializable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -15,7 +16,9 @@ import javax.validation.constraints.Size;
  * @version 0.1.0
  */
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ProfileDetails implements Details<UserPayload> {
+public class ProfileDetails implements Details<UserPayload>, Serializable {
+    private static final long serialVersionUID = 2359580583895919279L;
+
     /**
      * The user id which identifies the owner of the profile details.
      * This field should only be used to search records in the database. It cannot be updated.

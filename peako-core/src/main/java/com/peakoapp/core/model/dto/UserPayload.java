@@ -10,7 +10,9 @@ import java.io.Serializable;
  *
  * @version 0.1.0
  */
-public class UserPayload implements Serializable, Payload<UserEntity> {
+public class UserPayload implements Payload<UserEntity>, Serializable {
+    private static final long serialVersionUID = 6578041394643643437L;
+
     private Long id;
     private String email;
     private Boolean emailVerified;
