@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional(rollbackFor = Exception.class)
 @Primary
-@Service
+@Service(value = "defaultUserEntityService")
 public class DefaultUserEntityService implements UserEntityService {
     protected static final String[] SPECIAL_PROPS =
             new String[] { "id", "nonDeleted", "nonLocked", "enabled" };
@@ -35,6 +35,17 @@ public class DefaultUserEntityService implements UserEntityService {
     @Override
     public Optional<UserPayload> getById(Long id) {
         return userEntityRepository.findById(id).map(UserPayload::new);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<UserPayload> getByEmail(String email) {
+        return userEntityRepository.findByEmail(email).map(UserPayload::new);
+    }
+
+    @Override
+    public Optional<UserPayload> create(UserPayload payload) {
+        return Optional.of(new UserPayload(userEntityRepository.save(payload.as())));
     }
 
     @Override

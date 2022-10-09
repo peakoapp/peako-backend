@@ -1,6 +1,7 @@
 package com.peakoapp.core.service;
 
 import com.peakoapp.core.model.dto.UserPayload;
+import java.util.Optional;
 
 /**
  * The {@code UserEntityService} interface provides basic methods for manipulating
@@ -9,6 +10,14 @@ import com.peakoapp.core.model.dto.UserPayload;
  * @version 0.1.0
  */
 public interface UserEntityService extends EntityService<UserPayload> {
+    /**
+     * Obtains the payload by looking for the given email, which is unique across the table.
+     *
+     * @param email The email address of the user.
+     * @return The payload of the entity.
+     */
+    Optional<UserPayload> getByEmail(String email);
+
     /**
      * Unlocks a locked account.
      *
