@@ -3,6 +3,9 @@ package com.peakoapp.core.model.dto;
 import com.peakoapp.core.constant.enums.IdentityProvider;
 import com.peakoapp.core.model.entity.UserEntity;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * The {@code UserPayload} class is a subset of {@link UserEntity}, which works with services
@@ -10,7 +13,7 @@ import java.io.Serializable;
  *
  * @version 0.1.0
  */
-public class UserPayload implements Payload<UserEntity>, Serializable {
+public class UserPayload implements AuthPayload, Serializable {
     private static final long serialVersionUID = 6578041394643643437L;
 
     private Long id;
@@ -181,6 +184,26 @@ public class UserPayload implements Payload<UserEntity>, Serializable {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    @Override
+    public Boolean isNonDeleted() {
+        return nonDeleted;
+    }
+
+    @Override
+    public Boolean isNonLocked() {
+        return nonLocked;
+    }
+
+    @Override
+    public Boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptySet();
     }
 
     @Override
