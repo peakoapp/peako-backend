@@ -25,7 +25,19 @@ public class UserPayload implements Serializable, Payload<UserEntity> {
     private Boolean nonLocked;
     private Boolean enabled;
 
+    /**
+     * Initializes fields with default values specified in the database.
+     */
     public UserPayload() {
+        this.emailVerified = false;
+        this.profileUrl = "www.defaulturl.com";  // TODO: replace with real default profile url
+        this.bio = "";
+        this.lastName = "";
+        this.location = "";
+        this.provider = IdentityProvider.LOCAL;
+        this.nonDeleted = true;
+        this.nonLocked = true;
+        this.enabled = true;
     }
 
     @SuppressWarnings("checkstyle:MissingJavadocMethod")
