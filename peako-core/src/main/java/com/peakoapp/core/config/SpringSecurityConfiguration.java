@@ -3,13 +3,17 @@ package com.peakoapp.core.config;
 import com.peakoapp.core.config.security.DefaultAccessDeniedHandler;
 import com.peakoapp.core.config.security.DefaultAuthenticationEntryPoint;
 import com.peakoapp.core.config.security.LocalAuthenticationProvider;
+import com.peakoapp.core.filter.JwtTokenAuthenticationFilter;
 import java.util.List;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
 /**
@@ -24,14 +28,17 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final DefaultAccessDeniedHandler defaultAccessDeniedHandler;
     private final DefaultAuthenticationEntryPoint defaultAuthenticationEntryPoint;
     private final LocalAuthenticationProvider localAuthenticationProvider;
+    private final JwtTokenAuthenticationFilter jwtTokenAuthenticationFilter;
 
     @SuppressWarnings("checkstyle:MissingJavadocMethod")
     public SpringSecurityConfiguration(DefaultAccessDeniedHandler defaultAccessDeniedHandler,
                                        DefaultAuthenticationEntryPoint defaultAuthenticationEntryPoint,
-                                       LocalAuthenticationProvider localAuthenticationProvider) {
+                                       LocalAuthenticationProvider localAuthenticationProvider,
+                                       JwtTokenAuthenticationFilter jwtTokenAuthenticationFilter) {
         this.defaultAccessDeniedHandler = defaultAccessDeniedHandler;
         this.defaultAuthenticationEntryPoint = defaultAuthenticationEntryPoint;
         this.localAuthenticationProvider = localAuthenticationProvider;
+        this.jwtTokenAuthenticationFilter = jwtTokenAuthenticationFilter;
     }
 
     @Override
@@ -62,11 +69,19 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.exceptionHandling()
                 .accessDeniedHandler(defaultAccessDeniedHandler)
                 .authenticationEntryPoint(defaultAuthenticationEntryPoint)
-                .and();
+                .and()
+                .addFilterBefore(jwtTokenAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(localAuthenticationProvider);
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 }
