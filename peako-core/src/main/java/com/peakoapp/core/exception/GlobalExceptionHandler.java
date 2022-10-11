@@ -6,6 +6,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -85,5 +86,14 @@ public class GlobalExceptionHandler {
     public R<?> handleInvalidJwtTokenException(InvalidJwtTokenException e) {
         logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
         return new R<>(ReCode.TOKEN_INVALID, null);
+    }
+
+    // Internal server errors
+
+    @ExceptionHandler(value = CoreException.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public R<?> handleCoreException(CoreException e) {
+        logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
+        return new R<>(ReCode.ERROR, null);
     }
 }
