@@ -45,7 +45,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
             userEntityService.getById(jwtToken.getSubject()).map(payload -> {
                 if (!payload.isNonDeleted()) {
                     throw new AccountDeletedException("The account has been deleted.");
-                } else if (payload.isNonLocked()) {
+                } else if (!payload.isNonLocked()) {
                     throw new AccountLockedException("The account has been locked.");
                 } else if (!payload.isEnabled()) {
                     throw new AccountDisabledException("The account has been disabled.");
