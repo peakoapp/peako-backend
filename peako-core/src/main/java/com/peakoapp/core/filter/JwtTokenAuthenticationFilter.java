@@ -4,8 +4,9 @@ import com.peakoapp.core.exception.AccountDeletedException;
 import com.peakoapp.core.exception.AccountDisabledException;
 import com.peakoapp.core.exception.AccountLockedException;
 import com.peakoapp.core.exception.AccountNotExistException;
-import com.peakoapp.core.factory.jwt.AccessTokenParser;
-import com.peakoapp.core.model.dto.JwtToken;
+import com.peakoapp.core.jwt.JwtToken;
+import com.peakoapp.core.jwt.JwtTokenManager;
+import com.peakoapp.core.jwt.TokenType;
 import com.peakoapp.core.service.UserEntityService;
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -40,7 +41,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
         String header = request.getHeader(HEADER_NAME);
         if (checkHeader(header) && SecurityContextHolder.getContext().getAuthentication() == null) {
             String authToken = header.substring(SCHEME.length()).trim();
-            JwtToken jwtToken = new AccessTokenParser(authToken).parse();
+            JwtToken jwtToken = JwtTokenManager.getProvider(TokenType.ACCESS).parse(authToken);
             userEntityService.getById(jwtToken.getSubject()).map(payload -> {
                 if (!payload.isNonDeleted()) {
                     throw new AccountDeletedException("The account has been deleted.");

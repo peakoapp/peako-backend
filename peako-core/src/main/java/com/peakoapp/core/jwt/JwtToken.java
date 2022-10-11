@@ -1,4 +1,4 @@
-package com.peakoapp.core.model.dto;
+package com.peakoapp.core.jwt;
 
 import java.util.Date;
 import java.util.Map;
