@@ -3,6 +3,7 @@ package com.peakoapp.core.config;
 import com.peakoapp.core.config.security.DefaultAccessDeniedHandler;
 import com.peakoapp.core.config.security.DefaultAuthenticationEntryPoint;
 import com.peakoapp.core.config.security.LocalAuthenticationProvider;
+import com.peakoapp.core.filter.FilterExceptionHandler;
 import com.peakoapp.core.filter.JwtTokenAuthenticationFilter;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
@@ -29,16 +30,19 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final DefaultAuthenticationEntryPoint defaultAuthenticationEntryPoint;
     private final LocalAuthenticationProvider localAuthenticationProvider;
     private final JwtTokenAuthenticationFilter jwtTokenAuthenticationFilter;
+    private final FilterExceptionHandler filterExceptionHandler;
 
     @SuppressWarnings("checkstyle:MissingJavadocMethod")
     public SpringSecurityConfiguration(DefaultAccessDeniedHandler defaultAccessDeniedHandler,
                                        DefaultAuthenticationEntryPoint defaultAuthenticationEntryPoint,
                                        LocalAuthenticationProvider localAuthenticationProvider,
-                                       JwtTokenAuthenticationFilter jwtTokenAuthenticationFilter) {
+                                       JwtTokenAuthenticationFilter jwtTokenAuthenticationFilter,
+                                       FilterExceptionHandler filterExceptionHandler) {
         this.defaultAccessDeniedHandler = defaultAccessDeniedHandler;
         this.defaultAuthenticationEntryPoint = defaultAuthenticationEntryPoint;
         this.localAuthenticationProvider = localAuthenticationProvider;
         this.jwtTokenAuthenticationFilter = jwtTokenAuthenticationFilter;
+        this.filterExceptionHandler = filterExceptionHandler;
     }
 
     @Override
@@ -71,7 +75,8 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(defaultAuthenticationEntryPoint)
                 .and()
                 .addFilterBefore(jwtTokenAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(filterExceptionHandler, JwtTokenAuthenticationFilter.class);
     }
 
     @Override
