@@ -6,13 +6,11 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.peakoapp.core.constant.constnt.Regex;
 import com.peakoapp.core.constant.enums.IdentityProvider;
 import com.peakoapp.core.model.dto.UserPayload;
-import com.peakoapp.core.validation.group.Credentials;
 import java.io.Serializable;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.validation.groups.Default;
 
 /**
  * The {@code AccountDetails} class is a subset of {@link UserPayload} that represents a user's
@@ -35,8 +33,8 @@ public class AccountDetails implements Details<UserPayload>, Serializable {
      * The email which the user uses to sign in their account.
      * This field can be directly set by user through the passed JSON value.
      */
-    @NotNull(groups = {Default.class, Credentials.class})
-    @Email(regexp = Regex.EMAIL, groups = {Default.class, Credentials.class})
+    @Size(max = 40)
+    @Email(regexp = Regex.EMAIL)
     private String email;
 
     /**
@@ -51,17 +49,17 @@ public class AccountDetails implements Details<UserPayload>, Serializable {
      * The unencrypted password which the user uses to sign in their account.
      * This field can be directly set by user through the passed JSON value.
      */
-    @NotNull(groups = {Default.class, Credentials.class})
-    @NotBlank(groups = {Default.class, Credentials.class})
-    @Size(min = 8, groups = {Default.class, Credentials.class})
+    @NotBlank
+    @Size(min = 8)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     /**
      * The identity provider which the user uses to sign in their account.
-     * This field can be directly set by user through the passed JSON value.
+     * This field should be set explicitly instead of relying on the user-passed JSON value through
+     * the API calls.
      */
-    @NotNull
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private IdentityProvider provider;
 
     /**
