@@ -13,6 +13,8 @@ public enum ReCode {
     NOT_FOUND(4000, "resource not found"),
     DUPLICATE(4001, "resource duplication"),
     BAD_PARAMS(4002, "bad parameters"),
+    UNAUTHORIZED(4003, "no credentials provided"),
+    FORBIDDEN(4004, "not enough privileges owned"),
 
     ACCOUNT_DELETED(4100, "The requested account has been deleted."),
     ACCOUNT_DISABLED(4101, "The requested account is not enabled."),
