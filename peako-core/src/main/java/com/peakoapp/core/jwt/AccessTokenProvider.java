@@ -24,7 +24,7 @@ import javax.crypto.SecretKey;
  * @version 0.1.0
  */
 public class AccessTokenProvider implements JwtTokenProvider {
-    protected final long expiration = 18000L;
+    protected final long expiration = 1800000L;  // 30 minutes
     protected final SignatureAlgorithm algorithm = SignatureAlgorithm.HS256;
     private static final String SECRET = "4neeUxOeKIGWvGlPtGR2AUF4idgbfyEs3RDQEuMk9ElP8a5tsAskYpVxn"
             + "XqZ2UyJrjK0YgjvVdangkzygSeDEAZBJeZ8r5mN5JkrYHqaY3pwhWq8Jjb2ffKcKI2Q6hb58elO52aluIjf6"
