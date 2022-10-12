@@ -1,14 +1,13 @@
 package com.peakoapp.core.constant.enums;
 
 /**
- * The RCode enumerates the custom status code used in the response body.
+ * The {@code RCode} enumerates the custom status code used in the response body used by
+ * {@link com.peakoapp.core.utils.R}.
  *
  * @version 0.1.0
  */
 public enum ReCode {
     SUCCESS(2000, "OK"),
-
-    ALREADY_CONFIRMED(2100, "The email address has been verified."),
 
     NOT_FOUND(4000, "resource not found"),
     DUPLICATE(4001, "resource duplication"),
@@ -16,17 +15,16 @@ public enum ReCode {
     UNAUTHORIZED(4003, "no credentials provided"),
     FORBIDDEN(4004, "not enough privileges owned"),
 
-    ACCOUNT_DELETED(4100, "The requested account has been deleted."),
-    ACCOUNT_DISABLED(4101, "The requested account is not enabled."),
-    ACCOUNT_LOCKED(4102, "The requested account is locked."),
-    ACCOUNT_NOT_EXIST(4103, "The requested account does not exist."),
-    ACCOUNT_EXISTED(4104, "The email address has been used."),
+    ACCOUNT_DELETED(4100, "account deleted"),
+    ACCOUNT_DISABLED(4101, "account disabled"),
+    ACCOUNT_LOCKED(4102, "account locked"),
+    ACCOUNT_NOT_EXIST(4103, "account not found"),
+    ACCOUNT_EXISTED(4104, "email address in use"),
 
-    TOKEN_EXPIRED(4200, "The provided token has expired."),
-    TOKEN_INVALID(4201, "The provided token is not valid."),
+    TOKEN_EXPIRED(4200, "expired token"),
+    TOKEN_INVALID(4201, "invalid token"),
 
-    ERROR(5000, "The request encountered an unknown server error."),
-    DB_OP_ERROR(5001, "database operation error")
+    ERROR(5000, "unknown server error"),
     ;
 
     private final int code;

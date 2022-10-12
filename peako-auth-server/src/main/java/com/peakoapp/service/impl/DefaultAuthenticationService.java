@@ -1,7 +1,6 @@
 package com.peakoapp.service.impl;
 
 import com.peakoapp.core.exception.AccountExistedException;
-import com.peakoapp.core.exception.CoreException;
 import com.peakoapp.core.jwt.JwtTokenManager;
 import com.peakoapp.core.jwt.TokenType;
 import com.peakoapp.core.model.dto.AuthPayload;
@@ -11,6 +10,8 @@ import com.peakoapp.core.service.UserEntityService;
 import com.peakoapp.service.AuthenticationService;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Primary
 @Service(value = "defaultAuthenticationService")
 public class DefaultAuthenticationService implements AuthenticationService {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultAuthenticationService.class);
+
     private final UserEntityService userEntityService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationProvider authenticationProvider;
@@ -44,31 +47,29 @@ public class DefaultAuthenticationService implements AuthenticationService {
 
     @Override
     public Map<String, String> signUp(SignupDetails signupDetails) {
-        userEntityService.getByEmail(signupDetails.getEmail()).ifPresent(payload -> {
-            throw new AccountExistedException("The account associated with " + payload.getEmail()
-                    + " has already existed.");
-        });
+        logger.debug("User::{}: Signing up with email and password", signupDetails.getEmail());
         signupDetails.setPassword(passwordEncoder.encode(signupDetails.getPassword()));
-        return userEntityService.create(signupDetails.as()).map(payload -> {
-            HashMap<String, String> accessKeyMap = new HashMap<>();
-            String accessKey = JwtTokenManager.getProvider(TokenType.ACCESS).create(payload.getId());
-            accessKeyMap.put("access_key", accessKey);
-            return accessKeyMap;
-        }).orElseThrow(() -> {
-            throw new CoreException("Failed to create a new account.");
-        });
+        return userEntityService
+                .create(signupDetails.as())
+                .map(payload -> createAccessToken(payload.getId()))
+                .orElseThrow(() -> new AccountExistedException("The email address"
+                        + signupDetails.getEmail() + " already existed."));
     }
 
     @Override
     public Map<String, String> signIn(LoginDetails loginDetails) {
+        logger.debug("User::{}: Signing in with email and password", loginDetails.getEmail());
         UsernamePasswordAuthenticationToken up =
                 new UsernamePasswordAuthenticationToken(loginDetails.getEmail(),
                         loginDetails.getPassword());
         Authentication auth = authenticationProvider.authenticate(up);
-        AuthPayload payload = (AuthPayload) auth.getPrincipal();
-        HashMap<String, String> accessKeyMap = new HashMap<>();
-        String accessKey = JwtTokenManager.getProvider(TokenType.ACCESS).create(payload.getId());
-        accessKeyMap.put("access_key", accessKey);
-        return accessKeyMap;
+        return createAccessToken(((AuthPayload) auth.getPrincipal()).getId());
+    }
+
+    private Map<String, String> createAccessToken(Long id) {
+        HashMap<String, String> tokenMap = new HashMap<>();
+        String token = JwtTokenManager.getProvider(TokenType.ACCESS).create(id);
+        tokenMap.put("access_token", token);
+        return tokenMap;
     }
 }

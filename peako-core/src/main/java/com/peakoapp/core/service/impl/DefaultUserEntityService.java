@@ -6,7 +6,10 @@ import com.peakoapp.core.repository.UserEntityRepository;
 import com.peakoapp.core.service.EntityService;
 import com.peakoapp.core.service.UserEntityService;
 import com.peakoapp.core.utils.ArrayUtils;
+import java.util.Arrays;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Primary
 @Service(value = "defaultUserEntityService")
 public class DefaultUserEntityService implements UserEntityService {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultUserEntityService.class);
     protected static final String[] SPECIAL_PROPS =
             new String[] { "id", "nonDeleted", "nonLocked", "enabled" };
 
@@ -34,26 +38,41 @@ public class DefaultUserEntityService implements UserEntityService {
     @Transactional(readOnly = true)
     @Override
     public Optional<UserPayload> getById(Long id) {
+        logger.debug("DATABASE::UserEntity::{}: Retrieving", id);
         return userEntityRepository.findById(id).map(UserPayload::new);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Optional<UserPayload> getByEmail(String email) {
+        logger.debug("DATABASE::UserEntity::{}: Retrieving", email);
         return userEntityRepository.findByEmail(email).map(UserPayload::new);
     }
 
     @Override
     public Optional<UserPayload> create(UserPayload payload) {
-        return Optional.of(new UserPayload(userEntityRepository.save(payload.as())));
+        Optional<UserEntity> user = userEntityRepository.findByEmail(payload.getEmail());
+        if (user.isEmpty()) {
+            logger.debug("DATABASE::UserEntity::{}: Email available", payload.getEmail());
+            logger.debug("DATABASE::UserEntity::{}: Creating a new record", payload.getEmail());
+            return Optional.of(new UserPayload(userEntityRepository.save(payload.as())));
+        } else {
+            logger.debug("DATABASE::UserEntity::{}: Found duplicate email", payload.getEmail());
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<UserPayload> updateById(UserPayload payload) {
         return userEntityRepository.findById(payload.getId()).map(entity -> {
+            logger.debug("DATABASE::UserEntity::{}: Found", entity.getId());
+            logger.debug("DATABASE::UserEntity::{}: Updating the account", entity.getId());
             UserEntity updated = payload.as();
             String[] nullProps = EntityService.getNullProperties(updated);
-            BeanUtils.copyProperties(updated, entity, ArrayUtils.concat(nullProps, SPECIAL_PROPS));
+            String[] ignoredProps = ArrayUtils.concat(nullProps, SPECIAL_PROPS);
+            logger.debug("DATABASE::UserEntity::{}: Ignoring the null fields {} while updating",
+                    Arrays.toString(ignoredProps), entity.getId());
+            BeanUtils.copyProperties(updated, entity, ignoredProps);
             return new UserPayload(userEntityRepository.save(entity));
         });
     }
@@ -61,41 +80,71 @@ public class DefaultUserEntityService implements UserEntityService {
     @Override
     public void unlock(Long id) {
         userEntityRepository.findById(id).ifPresent(entity -> {
-            entity.setNonLocked(true);
-            entity.setEnabled(entity.getNonDeleted() && entity.getNonLocked());
-            userEntityRepository.save(entity);
+            logger.debug("DATABASE::UserEntity::{}: Found", id);
+            if (!entity.getNonLocked()) {
+                logger.debug("DATABASE::UserEntity::{}: Unlocking the account", entity.getId());
+                entity.setNonLocked(true);
+                entity.setEnabled(entity.getNonDeleted() && entity.getNonLocked());
+                userEntityRepository.save(entity);
+            } else {
+                logger.debug("DATABASE::User::{}: Ignoring the unlock request because the account"
+                        + " was not locked", entity.getId());
+            }
         });
     }
 
     @Override
     public void lock(Long id) {
         userEntityRepository.findById(id).ifPresent(entity -> {
-            entity.setNonLocked(false);
-            entity.setEnabled(false);
-            userEntityRepository.save(entity);
+            logger.debug("DATABASE::UserEntity::{}: Found", id);
+            if (entity.getNonLocked()) {
+                logger.debug("DATABASE::UserEntity::{}: Locking the account", entity.getId());
+                entity.setNonLocked(false);
+                entity.setEnabled(false);
+                userEntityRepository.save(entity);
+            } else {
+                logger.debug("DATABASE::User::{}: Ignoring the lock request because the account"
+                        + " was already locked", entity.getId());
+            }
         });
     }
 
     @Override
     public void recover(Long id) {
         userEntityRepository.findById(id).ifPresent(entity -> {
-            entity.setNonDeleted(true);
-            entity.setEnabled(entity.getNonDeleted() && entity.getNonLocked());
-            userEntityRepository.save(entity);
+            logger.debug("DATABASE::UserEntity::{}: Found", id);
+            if (!entity.getNonDeleted()) {
+                logger.debug("DATABASE::UserEntity::{}: Recovering the account", entity.getId());
+                entity.setNonDeleted(true);
+                entity.setEnabled(entity.getNonDeleted() && entity.getNonLocked());
+                userEntityRepository.save(entity);
+            } else {
+                logger.debug("DATABASE::User::{}: Ignoring the recover request because the account"
+                        + " was not deleted", entity.getId());
+            }
         });
     }
 
     @Override
     public void markDelete(Long id) {
         userEntityRepository.findById(id).ifPresent(entity -> {
-            entity.setNonDeleted(false);
-            entity.setEnabled(false);
-            userEntityRepository.save(entity);
+            logger.debug("DATABASE::UserEntity::{}: Found", id);
+            if (entity.getNonDeleted()) {
+                logger.debug("DATABASE::UserEntity::{}: Marking account deleted", entity.getId());
+                entity.setNonDeleted(false);
+                entity.setEnabled(false);
+                userEntityRepository.save(entity);
+            } else {
+                logger.debug("DATABASE::User::{}: Ignoring the mark delete request because the"
+                        + " account was already deleted", entity.getId());
+            }
         });
     }
 
     @Override
     public void deleteById(Long id) {
+        logger.debug("DATABASE::UserEntity::{}: Deleting the account permanently regardless of "
+                + " existence", id);
         userEntityRepository.deleteById(id);
     }
 }
