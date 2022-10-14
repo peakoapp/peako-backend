@@ -95,4 +95,11 @@ public class GlobalExceptionHandler {
         logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
         return new R<>(ReCode.ERROR, null);
     }
+
+    @ExceptionHandler(value = Exception.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public R<?> handleException(Exception e) {
+        logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
+        return new R<>(ReCode.ERROR, null);
+    }
 }
