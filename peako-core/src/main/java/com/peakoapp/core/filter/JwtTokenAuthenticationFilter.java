@@ -59,7 +59,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
                     logger.debug("FILTER::User::{}: Disabled account access", payload.getId());
                     throw new AccountDisabledException("The account has been disabled.");
                 } else {
-                    logger.debug("FILTER::User::{}: Deleted account access", payload.getId());
+                    logger.debug("FILTER::User::{}: Successful account access", payload.getId());
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(payload, null,
                                     payload.getAuthorities());
