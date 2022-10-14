@@ -3,6 +3,7 @@ package com.peakoapp.core.model.entity;
 import com.peakoapp.core.constant.enums.IdentityProvider;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -10,6 +11,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import org.hibernate.annotations.GenericGenerator;
@@ -85,6 +89,21 @@ public class UserEntity implements Serializable, Entirety {
     @LastModifiedDate
     @Column(name = "update_time", nullable = false)
     private Date updateTime;
+
+    @ManyToMany
+    @JoinTable(
+            name = "peako_friendship",
+            joinColumns = {
+                @JoinColumn(name = "user_id", nullable = false, updatable = false)
+            },
+            inverseJoinColumns = {
+                @JoinColumn(name = "friend_id", nullable = false, updatable = false)
+            }
+    )
+    private Set<UserEntity> friends;
+
+    @ManyToMany(mappedBy = "friends")
+    private Set<UserEntity> friendOf;
 
     public  UserEntity() {
     }
@@ -238,5 +257,21 @@ public class UserEntity implements Serializable, Entirety {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Set<UserEntity> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(Set<UserEntity> friends) {
+        this.friends = friends;
+    }
+
+    public Set<UserEntity> getFriendOf() {
+        return friendOf;
+    }
+
+    public void setFriendOf(Set<UserEntity> friendOf) {
+        this.friendOf = friendOf;
     }
 }
