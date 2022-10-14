@@ -16,7 +16,7 @@
     <modules>
         <module>peako-core</module>
         <module>peako-auth-server</module>
-        <module>peako-account-service</module>
+        <module>peako-resource-server</module>
     </modules>
 
     <properties>
