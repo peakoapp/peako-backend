@@ -9,6 +9,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Primary
 @Service(value = "defaultFriendRequestEntityService")
 public class DefaultFriendRequestEntityService implements FriendRequestEntityService {
+    private static final int PAGE_SIZE = 20;
+
     private final FriendRequestEntityRepository requestRepository;
 
     public DefaultFriendRequestEntityService(FriendRequestEntityRepository requestRepository) {
@@ -37,18 +42,10 @@ public class DefaultFriendRequestEntityService implements FriendRequestEntitySer
 
     @Transactional(readOnly = true)
     @Override
-    public List<FriendRequestPayload> getRequestsSentById(Long senderId) {
+    public List<FriendRequestPayload> listRequestsOf(Long userId, int page) {
         List<FriendRequestPayload> payloads = new ArrayList<>();
-        requestRepository.findBySenderId(senderId)
-                .forEach(entity -> payloads.add(new FriendRequestPayload(entity)));
-        return payloads;
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<FriendRequestPayload> getRequestsReceivedById(Long receiverId) {
-        List<FriendRequestPayload> payloads = new ArrayList<>();
-        requestRepository.findByReceiverId(receiverId)
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("create_time").descending());
+        requestRepository.findRequestsOf(userId, pageable)
                 .forEach(entity -> payloads.add(new FriendRequestPayload(entity)));
         return payloads;
     }
@@ -58,7 +55,7 @@ public class DefaultFriendRequestEntityService implements FriendRequestEntitySer
         // callers take care of the case where two users are already friends
         Long sid = payload.getSenderId();
         Long rid = payload.getReceiverId();
-        List<FriendRequestEntity> requests = requestRepository.findLatestBetween(sid, rid);
+        List<FriendRequestEntity> requests = requestRepository.findRequestsBetween(sid, rid);
         for (FriendRequestEntity request : requests) {
             if (isRequestActive(request)) {
                 return Optional.empty();

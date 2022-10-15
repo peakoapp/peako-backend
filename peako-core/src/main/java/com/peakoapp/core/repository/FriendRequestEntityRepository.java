@@ -2,8 +2,11 @@ package com.peakoapp.core.repository;
 
 import com.peakoapp.core.model.entity.FriendRequestEntity;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 /**
  * The {@code FriendRequestEntityRepository} defines interfaces of CRUD operations on
@@ -13,8 +16,23 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface FriendRequestEntityRepository extends CrudRepository<FriendRequestEntity, Long> {
     /**
-     * Obtains a list of friend requests between the given sender and the given receiver sorted by
-     * the request time (create time) in the descending order (the latest requests first).
+     * Retrieves a paginated list of friend requests associated with the user with the given id.
+     *
+     * @param userId The id of the user.
+     * @param pageable The pagination requirements.
+     * @return  A list of friend requests.
+     */
+    @Query(
+            value = "SELECT e FROM FriendRequestEntity e"
+                    + " WHERE e.senderId = :userId OR e.receiverId = :userId",
+            countQuery = "SELECT COUNT(e) FROM FriendRequestEntity e"
+                    + " WHERE e.senderId = :userId OR e.receiverId = :userId"
+    )
+    Page<FriendRequestEntity> findRequestsOf(@Param(value = "userId") Long userId, Pageable pageable);
+
+    /**
+     * Retrieves the full list of friend requests between the given sender and the given receiver
+     * sorted by the request time (create time) in the descending order (the latest requests first).
      *
      * @param senderId The id of the user who sends the friend requests to the receiver.
      * @param receiverId The id of the user who receives the friend requests.
@@ -25,21 +43,6 @@ public interface FriendRequestEntityRepository extends CrudRepository<FriendRequ
                     + " WHERE e.senderId = :senderId AND e.receiverId = :receiverId"
                     + " ORDER BY e.createTime DESC"
     )
-    List<FriendRequestEntity> findLatestBetween(Long senderId, Long receiverId);
-
-    /**
-     * Obtains a list of friend requests sent by the user with the given id to other users.
-     *
-     * @param senderId The id of the user who sends friend requests to others.
-     * @return A list of friend requests sent.
-     */
-    List<FriendRequestEntity> findBySenderId(Long senderId);
-
-    /**
-     * Obtains a list of friend requests received by the user with the given id.
-     *
-     * @param receiverId The id of the user who receives friend requests to others.
-     * @return A list of friend requests received.
-     */
-    List<FriendRequestEntity> findByReceiverId(Long receiverId);
+    List<FriendRequestEntity> findRequestsBetween(@Param(value = "senderId") Long senderId,
+                                                  @Param(value = "receiverId") Long receiverId);
 }

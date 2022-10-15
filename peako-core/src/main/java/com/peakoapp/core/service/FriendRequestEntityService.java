@@ -11,18 +11,11 @@ import java.util.List;
  */
 public interface FriendRequestEntityService extends EntityService<FriendRequestPayload> {
     /**
-     * Obtains a list of friend requests sent by the user with the given id to other users.
+     * Retrieves a paginated list of friend requests associated with the user with the given id.
      *
-     * @param senderId The id of the user who sends friend requests to others.
-     * @return A list of friend requests sent.
+     * @param userId The id of the user.
+     * @param page The page offset.
+     * @return A list of friend requests.
      */
-    List<FriendRequestPayload> getRequestsSentById(Long senderId);
-
-    /**
-     * Obtains a list of friend requests received by the user with the given id.
-     *
-     * @param receiverId The id of the user who receives friend requests to others.
-     * @return A list of friend requests received.
-     */
-    List<FriendRequestPayload> getRequestsReceivedById(Long receiverId);
+    List<FriendRequestPayload> listRequestsOf(Long userId, int page);
 }
