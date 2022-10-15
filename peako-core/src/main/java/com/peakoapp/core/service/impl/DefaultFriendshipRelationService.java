@@ -54,9 +54,9 @@ public class DefaultFriendshipRelationService implements FriendshipRelationServi
 
     @Transactional(readOnly = true)
     @Override
-    public boolean isFriend(Long id, Long userId) {
-        logger.debug("DATABASE::FriendshipRelation({}, {}): Checking the friendship", id, userId);
-        return friendshipRelationRepository.isFriend(id, userId);
+    public boolean hasRelation(Long id1, Long id2) {
+        logger.debug("DATABASE::FriendshipRelation({}, {}): Checking the friendship", id1, id2);
+        return friendshipRelationRepository.isFriend(id1, id2);
     }
 
     @Override
