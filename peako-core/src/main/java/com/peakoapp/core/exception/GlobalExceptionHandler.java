@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,8 +33,22 @@ public class GlobalExceptionHandler {
         return new R<>(ReCode.ACCOUNT_DELETED, null);
     }
 
-    @ExceptionHandler(value = AccountDisabledException.class)
+    @ExceptionHandler(value = UnauthorizedAccessException.class)
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    public R<?> handleUnauthorizedAccessException(UnauthorizedAccessException e) {
+        logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
+        return new R<>(ReCode.UNAUTHORIZED, null);
+    }
+
+    @ExceptionHandler(value = ForbiddenAccessException.class)
+    @ResponseStatus(value = HttpStatus.FORBIDDEN)
+    public R<?> handleForbiddenAccessException(ForbiddenAccessException e) {
+        logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
+        return new R<>(ReCode.FORBIDDEN, null);
+    }
+
+    @ExceptionHandler(value = AccountDisabledException.class)
+    @ResponseStatus(value = HttpStatus.FORBIDDEN)
     public R<?> handleAccountDisabledException(AccountDisabledException e) {
         logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
         return new R<>(ReCode.ACCOUNT_DISABLED, null);
@@ -64,9 +79,16 @@ public class GlobalExceptionHandler {
 
     // Parameter validation exceptions
 
-    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class, BadParameterException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public R<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public R<?> handleParameterException(RuntimeException e) {
+        logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
+        return R.bad();
+    }
+
+    @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public R<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
         return R.bad();
     }
