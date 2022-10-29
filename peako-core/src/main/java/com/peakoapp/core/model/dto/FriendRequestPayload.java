@@ -1,6 +1,7 @@
 package com.peakoapp.core.model.dto;
 
 import com.peakoapp.core.model.entity.FriendRequestEntity;
+import com.peakoapp.core.utils.DateUtils;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -20,7 +21,13 @@ public class FriendRequestPayload implements Payload<FriendRequestEntity>, Seria
     private Boolean denied;
     private Date expiredAt;
 
+    /**
+     * Initializes a friend request.
+     */
     public FriendRequestPayload() {
+        this.approved = false;
+        this.denied = false;
+        this.expiredAt = DateUtils.addDays(new Date(), 7);
     }
 
     @SuppressWarnings("checkstyle:MissingJavadocMethod")
