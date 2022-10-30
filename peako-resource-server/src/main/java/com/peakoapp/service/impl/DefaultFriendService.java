@@ -1,5 +1,6 @@
 package com.peakoapp.service.impl;
 
+import com.peakoapp.core.exception.AlreadyFriendException;
 import com.peakoapp.core.exception.BadParameterException;
 import com.peakoapp.core.exception.ForbiddenAccessException;
 import com.peakoapp.core.model.dto.FriendRequestPayload;
@@ -125,9 +126,9 @@ public class DefaultFriendService implements FriendService {
         }
         if (isFriend(request.getSenderId(), request.getReceiverId())) {
             logger.debug("Friend: Invalid friend request sent to a friend");
-            throw new BadParameterException("Invalid friend request sent to a friend.");
+            throw new AlreadyFriendException("Invalid friend request sent to a friend.");
         }
-        logger.debug("Friend: Creating a new friend request between");
+        logger.debug("Friend: Creating a new friend request");
         return friendRequestService.create(request.as()).isPresent();
     }
 
