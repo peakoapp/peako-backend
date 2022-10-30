@@ -79,9 +79,16 @@ public class GlobalExceptionHandler {
 
     // Parameter validation exceptions
 
-    @ExceptionHandler(value = {MethodArgumentNotValidException.class, BadParameterException.class})
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public R<?> handleParameterException(RuntimeException e) {
+    public R<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
+        return R.bad();
+    }
+
+    @ExceptionHandler(value = BadParameterException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public R<?> handleBadParameterException(BadParameterException e) {
         logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
         return R.bad();
     }
