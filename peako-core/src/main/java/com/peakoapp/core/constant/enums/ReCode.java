@@ -14,12 +14,15 @@ public enum ReCode {
     BAD_PARAMS(4002, "bad parameters"),
     UNAUTHORIZED(4003, "no credentials provided"),
     FORBIDDEN(4004, "not enough privileges owned"),
+    METHOD_NOT_ALLOWED(4005, "no such http method"),
 
     ACCOUNT_DELETED(4100, "account deleted"),
     ACCOUNT_DISABLED(4101, "account disabled"),
     ACCOUNT_LOCKED(4102, "account locked"),
     ACCOUNT_NOT_EXIST(4103, "account not found"),
     ACCOUNT_EXISTED(4104, "email address in use"),
+
+    ALREADY_FRIENDS(4120, "already friends"),
 
     TOKEN_EXPIRED(4200, "expired token"),
     TOKEN_INVALID(4201, "invalid token"),

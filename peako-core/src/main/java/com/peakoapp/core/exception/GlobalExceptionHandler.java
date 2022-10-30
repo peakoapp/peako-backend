@@ -10,9 +10,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
  * The {@code GlobalExceptionHandler} class handles all the possible exceptions thrown in any Peako
@@ -77,6 +79,15 @@ public class GlobalExceptionHandler {
         return new R<>(ReCode.ACCOUNT_EXISTED, null);
     }
 
+    // Friend service related exceptions
+
+    @ExceptionHandler(value = AlreadyFriendException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public R<?> handleAlreadyFriendException(AlreadyFriendException e) {
+        logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
+        return new R<>(ReCode.ALREADY_FRIENDS, null);
+    }
+
     // Parameter validation exceptions
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -94,8 +105,22 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseStatus(value = HttpStatus.METHOD_NOT_ALLOWED)
     public R<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
+        return new R<>(ReCode.METHOD_NOT_ALLOWED, null);
+    }
+
+    @ExceptionHandler(value = MissingServletRequestParameterException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public R<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
+        return R.bad();
+    }
+
+    @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public R<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         logger.warn("Caught at the exception handler {}: {}", e.getClass(), e.getMessage());
         return R.bad();
     }
