@@ -44,7 +44,7 @@ public class DefaultFriendRequestEntityService implements FriendRequestEntitySer
     @Override
     public List<FriendRequestPayload> listRequestsOf(Long userId, int page) {
         List<FriendRequestPayload> payloads = new ArrayList<>();
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("create_time").descending());
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("createTime").descending());
         requestRepository.findRequestsOf(userId, pageable)
                 .forEach(entity -> payloads.add(new FriendRequestPayload(entity)));
         return payloads;
