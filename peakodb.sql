@@ -22,3 +22,38 @@ create table peakodb.peako_user
 )
     comment 'Stores users'' profile and account data.';
 
+create table peakodb.peako_friend_request
+(
+    request_id  bigint                             not null comment 'A table-wise unique id.'
+        primary key,
+    sender_id   bigint                             not null comment 'The id of the user who sends a friend request to the other.',
+    receiver_id bigint                             not null comment 'The id of the user who receives a friend request from the other.',
+    approved    tinyint  default 0                 not null comment 'The approval state of the request.',
+    denied      tinyint  default 0                 not null comment 'The denial state of the request.',
+    expired_at  datetime                           not null comment 'The timestamp at which the friend request will expire.',
+    create_time datetime default CURRENT_TIMESTAMP not null comment 'The timestamp at which the friend request was created.',
+    constraint peako_friend_request_receiver_id_user_user_id_fk
+        foreign key (receiver_id) references peakodb.peako_user (user_id)
+            on update cascade on delete cascade,
+    constraint peako_friend_request_sender_id_user_user_id_fk
+        foreign key (sender_id) references peakodb.peako_user (user_id)
+            on update cascade on delete cascade
+)
+    comment 'Stores friend requests from one user to another.';
+
+create table peakodb.peako_friendship
+(
+    friendship_id bigint                             not null comment 'A table-wise unique id.'
+        primary key,
+    user_id       bigint                             not null comment 'The id of the user who''s a friend of the other user''s.',
+    friend_id     bigint                             not null comment 'The id of the user who''s a friend of the other user''s.',
+    create_time   datetime default CURRENT_TIMESTAMP not null comment 'The timestamp at which the users became friends.',
+    constraint peako_friendship_friend_id_user_user_id_fk
+        foreign key (friend_id) references peakodb.peako_user (user_id)
+            on update cascade on delete cascade,
+    constraint peako_friendship_user_user_id_fk
+        foreign key (user_id) references peakodb.peako_user (user_id)
+            on update cascade on delete cascade
+)
+    comment 'Stores the friendships between users.';
+
