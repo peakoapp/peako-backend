@@ -50,6 +50,26 @@ public class DefaultFriendRequestEntityService implements FriendRequestEntitySer
         return payloads;
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<FriendRequestPayload> listRequestsSent(Long senderId, int page) {
+        List<FriendRequestPayload> payloads = new ArrayList<>();
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("createTime").descending());
+        requestRepository.findRequestsSent(senderId, pageable)
+                .forEach(entity -> payloads.add(new FriendRequestPayload(entity)));
+        return payloads;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<FriendRequestPayload> listRequestsReceived(Long receiverId, int page) {
+        List<FriendRequestPayload> payloads = new ArrayList<>();
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("createTime").descending());
+        requestRepository.findRequestsReceived(receiverId, pageable)
+                .forEach(entity -> payloads.add(new FriendRequestPayload(entity)));
+        return payloads;
+    }
+
     @Override
     public Optional<FriendRequestPayload> create(FriendRequestPayload payload) {
         // callers take care of the case where two users are already friends

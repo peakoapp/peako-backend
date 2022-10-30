@@ -31,6 +31,36 @@ public interface FriendRequestEntityRepository extends CrudRepository<FriendRequ
     Page<FriendRequestEntity> findRequestsOf(@Param(value = "userId") Long userId, Pageable pageable);
 
     /**
+     * Retrieves a paginated list of friend requests sent by the user with the given id.
+     *
+     * @param senderId The id of the sender.
+     * @param pageable The pagination requirements.
+     * @return  A list of friend requests.
+     */
+    @Query(
+            value = "SELECT e FROM FriendRequestEntity e"
+                    + " WHERE e.senderId = :senderId",
+            countQuery = "SELECT COUNT(e) FROM FriendRequestEntity e"
+                    + " WHERE e.senderId = :senderId"
+    )
+    Page<FriendRequestEntity> findRequestsSent(@Param(value = "senderId") Long senderId, Pageable pageable);
+
+    /**
+     * Retrieves a paginated list of friend requests received by the user with the given id.
+     *
+     * @param receiverId The id of the receiver.
+     * @param pageable The pagination requirements.
+     * @return  A list of friend requests.
+     */
+    @Query(
+            value = "SELECT e FROM FriendRequestEntity e"
+                    + " WHERE e.receiverId = :receiverId",
+            countQuery = "SELECT COUNT(e) FROM FriendRequestEntity e"
+                    + " WHERE e.receiverId = :receiverId"
+    )
+    Page<FriendRequestEntity> findRequestsReceived(@Param(value = "receiverId") Long receiverId, Pageable pageable);
+
+    /**
      * Retrieves the full list of friend requests between the given sender and the given receiver
      * sorted by the request time (create time) in the descending order (the latest requests first).
      *

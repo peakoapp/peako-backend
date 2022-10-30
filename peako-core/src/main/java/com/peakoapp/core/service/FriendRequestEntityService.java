@@ -18,4 +18,22 @@ public interface FriendRequestEntityService extends EntityService<FriendRequestP
      * @return A list of friend requests.
      */
     List<FriendRequestPayload> listRequestsOf(Long userId, int page);
+
+    /**
+     * Retrieves a paginated list of friend requests sent by the user with the given id.
+     *
+     * @param senderId The id of the sender.
+     * @param page The page offset.
+     * @return A list of friend requests.
+     */
+    List<FriendRequestPayload> listRequestsSent(Long senderId, int page);
+
+    /**
+     * Retrieves a paginated list of friend requests received by the user with the given id.
+     *
+     * @param receiverId The id of the receiver.
+     * @param page The page offset.
+     * @return A list of friend requests.
+     */
+    List<FriendRequestPayload> listRequestsReceived(Long receiverId, int page);
 }
